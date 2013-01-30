@@ -46,8 +46,8 @@ def solve (init) :
     while (j < 3) :
       k1 = dt * f[j](t,res[0][i],res[1][i],res[2][i],init[3],init[4],init[5])
       k2 = dt * f[j](t+dt/2,res[0][i]+k1/2,res[1][i]+k1/2,res[2][i]+k1/2,init[3],init[4],init[5])
-      k3 = dt * f[j](t+dt/2,res[0][i]+k2/2,res[1][i]+k2/2,res[2][i]+k1/2,init[3],init[4],init[5])
-      k4 = dt * f[j](t+dt,res[0][i]+k3,res[1][i]+k3,res[2][i]+k1/2,init[3],init[4],init[5])
+      k3 = dt * f[j](t+dt/2,res[0][i]+k2/2,res[1][i]+k2/2,res[2][i]+k2/2,init[3],init[4],init[5])
+      k4 = dt * f[j](t+dt,res[0][i]+k3,res[1][i]+k3,res[2][i]+k3,init[3],init[4],init[5])
       res[j].append((res[j][i] + 1./6. * (k1 + 2*k2 + 2*k3 + k4)))
       j = j + 1
     i = i + 1  
