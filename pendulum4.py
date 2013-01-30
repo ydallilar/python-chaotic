@@ -24,7 +24,7 @@
 # solve2(var,cnst,'dt','steps','plotstep')
 ##################################################################
 
-from numpy import sin,cos,pi,array,zeros,concatenate
+from numpy import sin,cos,pi,array,zeros,rint
 import matplotlib 
 matplotlib.use("gtk3cairo")
 import matplotlib.pyplot as plt
@@ -153,3 +153,23 @@ def plott(res,opt="w",timeint=0.1) :
   plt.show()  
     
 ##################################################################      
+# fourier transform
+def fourier (res) :
+  dt = res[3][1] - res[3][0]
+  term1 = lambda t,w,dt : res[1][int(rint(t/dt))]*cos(w*t)*dt
+  term2 = lambda t,w,dt : -res[1][int(rint(t/dt))]*sin(w*t)*dt
+  
+  power = []
+  i = 0
+  while (i < 100) :
+    w = i/50.
+    sum1 = 0
+    sum2 = 0
+    for t in res[3] :
+      sum1 = sum1 + term1(t,w,dt)
+      sum2 = sum2 + term1(t,w,dt)
+    power.append((sum1 + sum2)**2)
+    i = i + 1
+  return power
+  
+##################################################################  
