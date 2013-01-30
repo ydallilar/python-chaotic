@@ -1,16 +1,28 @@
-##################################################################
 #!/usr/bin/python
 
-#chaotic pendulum problem
-#plots phase space
-
-# variables
+##################################################################
+#  Yigit Dallilar  30.01.2010
+#
+#  For chaotic pendulum problem, program draws phase space euler
+# or runge-kutta is optional.
+##################################################################
+# variables :
 # w  : angular frequency
 # th : angle
 # ph : driven angle
 # wd : driven angular frequency
 # q  : damping factor
 # g  : driven force amplitude
+##################################################################
+# How to use : 
+# var = numpy.array([w,th,ph])
+# cnst = numpy.array([q,g,wd])
+#
+# for runge-kutta :
+# solve(var,cnst,'dt','steps','plotstep')
+# for euler : 
+# solve2(var,cnst,'dt','steps','plotstep')
+##################################################################
 
 from numpy import sin,cos,pi,array,zeros,concatenate
 import matplotlib 
@@ -61,14 +73,14 @@ def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  plt.plot(res[1][0::100],res[0][0::100],'k.',markersize=1)
+  plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
   plt.xlim(-pi,pi)
   plt.show()
   return res
   
 ##################################################################
 # euler method
-def solve2(var,cnst,dt=0.0001,steps=100000,plostep=100) :
+def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
   f = (fw,fth,fph)
   t = 0
   tmp = var
@@ -96,3 +108,5 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plostep=100) :
   plt.xlim(-pi,pi)
   plt.show()  
   return res
+  
+##################################################################  
