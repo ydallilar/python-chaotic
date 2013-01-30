@@ -48,7 +48,7 @@ def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
   f = (fw,fth,fph)
   t = 0
   tmp = var
-  res = ([var[0]],[var[1]],[var[2]])
+  res = ([var[0]],[var[1]],[var[2]],[t])
   k = zeros((4,3))
   
   i = 0
@@ -61,6 +61,7 @@ def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
     res[0].append(tmp[0])
     res[1].append(tmp[1]) 
     res[2].append(tmp[2])
+    res[3].append(t+dt)
     
     i = i + 1  
     t = t + dt
@@ -73,9 +74,6 @@ def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
-  plt.xlim(-pi,pi)
-  plt.show()
   return res
   
 ##################################################################
@@ -84,7 +82,7 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
   f = (fw,fth,fph)
   t = 0
   tmp = var
-  res = ([var[0]],[var[1]],[var[2]])
+  res = ([var[0]],[var[1]],[var[2]],[t])
   k = zeros(3)
   
   i = 0
@@ -104,9 +102,54 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
-  plt.xlim(-pi,pi)
-  plt.show()  
   return res
   
 ##################################################################  
+# plots phase space
+def phase_space(res,plotstep=100) :
+  plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
+  plt.xlim(-pi,pi)
+  plt.show()  
+
+##################################################################
+# plots poincare sections
+def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
+  sect_res = ([],[],[])
+  time = 2*pi*strobe/const[2]
+  
+  i = 0
+  j = 0
+  while (i < len(res[0])) :
+    if (time*j <= res[3][i]) :
+      if (j >= steady) :
+        sect_res[0].append(res[0][i])
+        sect_res[1].append(res[1][i])
+        sect_res[2].append(res[2][i])
+      mult = mult + 1
+    i = i + 1
+  
+  plt.plot(sect_res[1][0::plotstep],sect_res[0][0::plotstep],'k*',markersize=5)
+  plt.xlim(-pi,pi)
+  plt.show()  
+  
+##################################################################
+# plots t versus th or w
+def plott(res,opt="w",timeint=0.1) :
+  arr = ([],[],[],[])
+  i = 0
+  j = 0
+  while (i < len(res[0])) :
+    if (timeint*j <= res[3][i]) :
+      arr[0].append(res[0][i])
+      arr[1].append(res[1][i])
+      arr[2].append(res[2][i])
+      arr[3].append(res[3][i])
+      j = j + 1
+    i = i + 1
+  
+  if (opt == "w") : plt.plot(arr[3],arr[0])
+  if (opt == "th") : plt.plot(arr[3],arr[1])
+  if (opt == "ph") : plt.plot(arr[3],arr[2])
+  plt.show()  
+    
+##################################################################      
