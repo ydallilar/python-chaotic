@@ -61,7 +61,8 @@ def solve (init) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  plt.plot(res[1][0::50],res[0][0::50],'k.',markersize=0.5)
+  plt.plot(res[1][0::50],res[0][0::50],'k*',markersize=0.5)
+  plt.xlim(-pi,pi)
   plt.show()
 
 ##################################################################
