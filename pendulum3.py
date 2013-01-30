@@ -34,10 +34,10 @@ def fph (t,w,th,ph,q,g,wd) :
 # just runge-kutta for this problem  
 def solve (init) :
   f = (fw,fth,fph)
-  dt = 0.01
+  dt = 0.0005
   t = 0
   i = 0
-  steps = 2000
+  steps = 400000
   
   res = ([init[0]],[init[1]],[init[2]],init[3],init[4],init[5])
   
@@ -61,7 +61,7 @@ def solve (init) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  plt.plot(res[1],res[0],'*')
+  plt.plot(res[1][0::50],res[0][0::50],'k.',markersize=0.5)
   plt.show()
 
 ##################################################################
