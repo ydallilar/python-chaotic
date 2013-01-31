@@ -14,14 +14,22 @@
 # q  : damping factor
 # g  : driven force amplitude
 ##################################################################
-# How to use : 
+# ************** HOW TO USE **************
+#
+# START WITH INITIAL VALUES AND CONSTANTS : 
 # var = numpy.array([w,th,ph])
 # cnst = numpy.array([q,g,wd])
 #
-# for runge-kutta :
+# FOR A GIVEN var AND cnst PROGRAM CAN :
+# -solve by runge-kutta method :
 # solve(var,cnst,'dt','steps','plotstep')
-# for euler : 
+# -solve by euler method : 
 # solve2(var,cnst,'dt','steps','plotstep')
+# - plot phase space :
+# - plot poincare section :
+# - plot t versus * graphs :
+# - calculates fourier transform :
+# - plot basins of attraction :
 ##################################################################
 
 from numpy import sin,cos,pi,array,zeros,rint
@@ -44,7 +52,7 @@ def fph (t,var,cnst) :
 
 ##################################################################
 # just runge-kutta for this problem  
-def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
+def solve (var,cnst,dt=0.01,steps=100000,plotstep=100) :
   f = (fw,fth,fph)
   t = 0
   tmp = var
@@ -57,7 +65,7 @@ def solve (var,cnst,dt=0.001,steps=100000,plotstep=100) :
     k[1] = dt * array([f[0](t+0.5*dt,tmp+k[0]*0.5,cnst),f[1](t+0.5*dt,tmp+k[0]*0.5,cnst),f[2](t+0.5*dt,tmp+k[0]*0.5,cnst)])
     k[2] = dt * array([f[0](t+0.5*dt,tmp+k[1]*0.5,cnst),f[1](t+0.5*dt,tmp+k[1]*0.5,cnst),f[2](t+0.5*dt,tmp+k[1]*0.5,cnst)])
     k[3] = dt * array([f[0](t+dt,tmp+k[2],cnst),f[1](t+dt,tmp+k[2],cnst),f[2](t+dt,tmp+k[2],cnst)])
-    tmp = array([res[0][i],res[1][i],res[2][i]]) + 1./6. * (k[0] + k[3] + 0.5*(k[1] + k[2]))
+    tmp = array([res[0][i],res[1][i],res[2][i]]) + 1./6. * (k[0] + k[3] + 2*(k[1] + k[2]))
     res[0].append(tmp[0])
     res[1].append(tmp[1]) 
     res[2].append(tmp[2])
@@ -92,6 +100,8 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
     res[0].append(tmp[0])
     res[1].append(tmp[1]) 
     res[2].append(tmp[2])
+    res[3].append(t+dt)
+    t = t + dt
     i = i + 1
   
   i = 0
@@ -109,6 +119,7 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
 def phase_space(res,plotstep=100) :
   plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
   plt.xlim(-pi,pi)
+  plt.ylim(-pi,pi)
   plt.show()  
 
 ##################################################################
@@ -125,11 +136,12 @@ def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
         sect_res[0].append(res[0][i])
         sect_res[1].append(res[1][i])
         sect_res[2].append(res[2][i])
-      mult = mult + 1
+      j = j + 1
     i = i + 1
   
   plt.plot(sect_res[1][0::plotstep],sect_res[0][0::plotstep],'k*',markersize=5)
   plt.xlim(-pi,pi)
+  plt.ylim(-pi,pi)
   plt.show()  
   
 ##################################################################
@@ -154,12 +166,12 @@ def plott(res,opt="w",timeint=0.1) :
     
 ##################################################################      
 # fourier transform
-def fourier (res) :
+def fourier(res) :
   dt = res[3][1] - res[3][0]
   term1 = lambda t,w,dt : res[1][int(rint(t/dt))]*cos(w*t)*dt
   term2 = lambda t,w,dt : -res[1][int(rint(t/dt))]*sin(w*t)*dt
   
-  power = []
+  power = ([],[])
   i = 0
   while (i < 100) :
     w = i/50.
@@ -168,8 +180,11 @@ def fourier (res) :
     for t in res[3] :
       sum1 = sum1 + term1(t,w,dt)
       sum2 = sum2 + term1(t,w,dt)
-    power.append((sum1 + sum2)**2)
+    power[0].append((sum1 + sum2)**2)
+    power[1].append(w)
     i = i + 1
   return power
   
 ##################################################################  
+# basins of attraction
+##################################################################
