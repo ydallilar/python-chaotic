@@ -29,6 +29,7 @@
 # - plot poincare section :
 # - plot t versus * graphs :
 # - calculates fourier transform :
+# - plots trajectory :
 # - plot basins of attraction :
 ##################################################################
 
@@ -62,25 +63,21 @@ def solve (var,cnst,dt=0.01,steps=100000,plotstep=100) :
   i = 0
   while (i < steps) :
     k[0] = dt * array([f[0](t,tmp,cnst),f[1](t,tmp,cnst),f[2](t,tmp,cnst)])
-    k[1] = dt * array([f[0](t+0.5*dt,tmp+k[0]*0.5,cnst),f[1](t+0.5*dt,tmp+k[0]*0.5,cnst),f[2](t+0.5*dt,tmp+k[0]*0.5,cnst)])
-    k[2] = dt * array([f[0](t+0.5*dt,tmp+k[1]*0.5,cnst),f[1](t+0.5*dt,tmp+k[1]*0.5,cnst),f[2](t+0.5*dt,tmp+k[1]*0.5,cnst)])
-    k[3] = dt * array([f[0](t+dt,tmp+k[2],cnst),f[1](t+dt,tmp+k[2],cnst),f[2](t+dt,tmp+k[2],cnst)])
+    t = t + 0.5*dt
+    tmp1 = tmp+k[0]*0.5
+    k[1] = dt * array([f[0](t,tmp1,cnst),f[1](t,tmp1,cnst),f[2](t,tmp1,cnst)])
+    tmp1 = tmp+k[1]*0.5
+    k[2] = dt * array([f[0](t,tmp1,cnst),f[1](t,tmp1,cnst),f[2](t,tmp1,cnst)])
+    t = t + 0.5*dt
+    tmp1 = tmp+k[2]
+    k[3] = dt * array([f[0](t,tmp1,cnst),f[1](t,tmp1,cnst),f[2](t,tmp1,cnst)])
     tmp = array([res[0][i],res[1][i],res[2][i]]) + 1./6. * (k[0] + k[3] + 2*(k[1] + k[2]))
     res[0].append(tmp[0])
     res[1].append(tmp[1]) 
     res[2].append(tmp[2])
-    res[3].append(t+dt)
+    res[3].append(t)
     
     i = i + 1  
-    t = t + dt
-  
-  i = 0
-  while (i < steps + 1) :
-    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
-      res[1][i] = - (pi - (res[1][i] % pi))
-    else :
-      res[1][i] = res[1][i] % pi
-    i = i + 1 
   
   return res
   
@@ -104,6 +101,12 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
     t = t + dt
     i = i + 1
   
+  return res
+  
+##################################################################  
+# plots phase space
+def phase_space(res,cnst,plotstep=100,steady=30) :
+  
   i = 0
   while (i < steps + 1) :
     if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
@@ -112,12 +115,16 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
       res[1][i] = res[1][i] % pi
     i = i + 1 
   
-  return res
-  
-##################################################################  
-# plots phase space
-def phase_space(res,plotstep=100) :
-  plt.plot(res[1][0::plotstep],res[0][0::plotstep],'k.',markersize=1)
+  arr = ([],[])
+  time = 2*pi/cnst[2]*steady
+  i = 0
+  while (i < len(res[0])) :
+    if (time <= res[3][i]) :
+      arr[0].append(res[0][i])
+      arr[1].append(res[1][i])
+    i = i + 1
+       
+  plt.plot(arr[1][0::plotstep],arr[0][0::plotstep],'k.',markersize=1)
   plt.xlim(-pi,pi)
   plt.ylim(-pi,pi)
   plt.show()  
@@ -125,6 +132,15 @@ def phase_space(res,plotstep=100) :
 ##################################################################
 # plots poincare sections
 def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
+  
+  i = 0
+  while (i < steps + 1) :
+    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
+      res[1][i] = - (pi - (res[1][i] % pi))
+    else :
+      res[1][i] = res[1][i] % pi
+    i = i + 1 
+  
   sect_res = ([],[],[])
   time = 2*pi*strobe/const[2]
   
@@ -147,6 +163,15 @@ def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
 ##################################################################
 # plots t versus th or w
 def plott(res,opt="w",timeint=0.1) :
+  
+  i = 0
+  while (i < steps + 1) :
+    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
+      res[1][i] = - (pi - (res[1][i] % pi))
+    else :
+      res[1][i] = res[1][i] % pi
+    i = i + 1 
+  
   arr = ([],[],[],[])
   i = 0
   j = 0
@@ -167,6 +192,15 @@ def plott(res,opt="w",timeint=0.1) :
 ##################################################################      
 # fourier transform
 def fourier(res) :
+
+  i = 0
+  while (i < steps + 1) :
+    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
+      res[1][i] = - (pi - (res[1][i] % pi))
+    else :
+      res[1][i] = res[1][i] % pi
+    i = i + 1 
+  
   dt = res[3][1] - res[3][0]
   term1 = lambda t,w,dt : res[1][int(rint(t/dt))]*cos(w*t)*dt
   term2 = lambda t,w,dt : -res[1][int(rint(t/dt))]*sin(w*t)*dt
@@ -185,6 +219,64 @@ def fourier(res) :
     i = i + 1
   return power
   
+##################################################################
+#NOT READY plots trajectory of the pendulum
+def trajectory(res,cnst,steady=[30,34]) :
+  place = ([],[])
+  radius = 1.
+  i = 1
+  dir = "0"
+  time = 2*pi/cnst[2]*array(steady)
+  while(i < len(res[0])) :
+    if (time[0] <= res[3][i]) :
+      if (dir == "0") :
+        place[0].append(radius * cos(res[1][i]))
+        place[1].append(radius * sin(res[1][i])) 
+        if (res[1][i+1] > res[1][i]) : 
+          dir = "+"
+          point = (res[1][i],radius)
+        else : 
+          dir = "-"
+          point = (res[1][i],radius)
+      elif (res[1][i] > res[1][i-1] and dir == "-") :
+        dir = "+"
+        radius = radius + 0.2 
+        point = (res[1][i],radius)
+        place[0].append(radius * cos(res[1][i-1]))
+        place[1].append(radius * sin(res[1][i-1])) 
+        place[0].append(radius * cos(res[1][i]))
+        place[1].append(radius * sin(res[1][i])) 
+      elif (res[1][i] < res[1][i-1] and dir == "+") : 
+        dir = "-"
+        radius = radius + 0.2
+        point = (res[1][i],radius)
+        place[0].append(radius * cos(res[1][i-1]))
+        place[1].append(radius * sin(res[1][i-1])) 
+        place[0].append(radius * cos(res[1][i]))
+        place[1].append(radius * sin(res[1][i])) 
+      else : 
+        if ((radius == point[1]) and ((dir == '+' and point[0]+2*pi <= res[1][i+5]) or (dir == '-' and point[0]-2*pi >= res[1][i+5]))) :
+          place[0].append(radius * cos(res[1][i]))
+          place[1].append(radius * sin(res[1][i])) 
+          radius = radius + 0.2
+          point = (res[1][i],radius)
+          place[0].append(radius * cos(res[1][i]))
+          place[1].append(radius * sin(res[1][i])) 
+        else :  
+          place[0].append(radius * cos(res[1][i]))
+          place[1].append(radius * sin(res[1][i]))
+    if (time[1] <= res[3][i]) :
+      break
+    i = i + 1 
+    
+  #return place
+  plt.plot([place[0][0],place[0][-1]],[place[1][0],place[1][-1]],'r*')
+  #plt.plot(place[0][20::60],place[1][20::60],'b*')
+  #plt.plot(place[0][40::60],place[1][40::60],'g*')
+  #plt.plot(place[0][60::60],place[1][60::60],'y*')
+  plt.plot(place[0],place[1],'k-',linewidth = 1.5)
+  plt.show()  
+    
 ##################################################################  
 # basins of attraction
 ##################################################################
