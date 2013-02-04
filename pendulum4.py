@@ -34,9 +34,9 @@
 ##################################################################
 
 from numpy import sin,cos,pi,array,zeros,rint
-import matplotlib 
-matplotlib.use("gtk3cairo")
-import matplotlib.pyplot as plt
+#import matplotlib 
+#matplotlib.use("gtkcairo")
+import pylab as plt
 
 ##################################################################
 # dw/dt
@@ -106,15 +106,7 @@ def solve2(var,cnst,dt=0.0001,steps=100000,plotstep=100) :
 ##################################################################  
 # plots phase space
 def phase_space(res,cnst,plotstep=100,steady=30) :
-  
-  i = 0
-  while (i < steps + 1) :
-    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
-      res[1][i] = - (pi - (res[1][i] % pi))
-    else :
-      res[1][i] = res[1][i] % pi
-    i = i + 1 
-  
+    
   arr = ([],[])
   time = 2*pi/cnst[2]*steady
   i = 0
@@ -123,7 +115,16 @@ def phase_space(res,cnst,plotstep=100,steady=30) :
       arr[0].append(res[0][i])
       arr[1].append(res[1][i])
     i = i + 1
-       
+    
+  i = 0
+  while (i < len(arr[0])) :
+    if ((arr[1][i] % (2*pi)) > (arr[1][i] % pi)) : 
+      arr[1][i] = - (pi - (arr[1][i] % pi))
+    else : 
+      arr[1][i] = arr[1][i] % pi
+    i = i + 1 
+  
+
   plt.plot(arr[1][0::plotstep],arr[0][0::plotstep],'k.',markersize=1)
   plt.xlim(-pi,pi)
   plt.ylim(-pi,pi)
@@ -132,15 +133,7 @@ def phase_space(res,cnst,plotstep=100,steady=30) :
 ##################################################################
 # plots poincare sections
 def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
-  
-  i = 0
-  while (i < steps + 1) :
-    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
-      res[1][i] = - (pi - (res[1][i] % pi))
-    else :
-      res[1][i] = res[1][i] % pi
-    i = i + 1 
-  
+    
   sect_res = ([],[],[])
   time = 2*pi*strobe/const[2]
   
@@ -155,6 +148,14 @@ def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
       j = j + 1
     i = i + 1
   
+  i = 0
+  while (i < len(sect_res[0])) :
+    if ((sect_res[1][i] % (2*pi)) > (sect_res[1][i] % pi)) : 
+      sect_res[1][i] = - (pi - (sect_res[1][i] % pi))
+    else :
+      sect_res[1][i] = sect_res[1][i] % pi
+    i = i + 1 
+  
   plt.plot(sect_res[1][0::plotstep],sect_res[0][0::plotstep],'k*',markersize=5)
   plt.xlim(-pi,pi)
   plt.ylim(-pi,pi)
@@ -165,7 +166,7 @@ def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
 def plott(res,opt="w",timeint=0.1) :
   
   i = 0
-  while (i < steps + 1) :
+  while (i < len(res[0])) :
     if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
       res[1][i] = - (pi - (res[1][i] % pi))
     else :
@@ -193,14 +194,6 @@ def plott(res,opt="w",timeint=0.1) :
 # fourier transform
 def fourier(res) :
 
-  i = 0
-  while (i < steps + 1) :
-    if ((res[1][i] % (2*pi)) > (res[1][i] % pi)) : 
-      res[1][i] = - (pi - (res[1][i] % pi))
-    else :
-      res[1][i] = res[1][i] % pi
-    i = i + 1 
-  
   dt = res[3][1] - res[3][0]
   term1 = lambda t,w,dt : res[1][int(rint(t/dt))]*cos(w*t)*dt
   term2 = lambda t,w,dt : -res[1][int(rint(t/dt))]*sin(w*t)*dt
@@ -220,8 +213,9 @@ def fourier(res) :
   return power
   
 ##################################################################
-#NOT READY plots trajectory of the pendulum
+#trajectory of the pendulum
 def trajectory(res,cnst,steady=[30,34]) :
+
   place = ([],[])
   radius = 1.
   i = 1
