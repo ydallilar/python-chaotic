@@ -1,10 +1,17 @@
 #!/usr/bin/python
 
 ##################################################################
-#  Yigit Dallilar  30.01.2010
+#  Yigit Dallilar  30.01.2013
 #
-#  For chaotic pendulum problem, program draws phase space euler
-# or runge-kutta is optional.
+#  FOR CHAOTIC PENDULUM PROBLEM, PROGRAM CALCULATES RES OUTPUT
+#  BY USING SOLVE FUNCTIONS. THEN ONE CAN DRAW DESIRED PLOTS 
+#  BY OTHER FUNCTIONS.
+#
+#  **TO DO :
+#   (1) ANIMATION OF THE MOVEMENT OF THE PENDULUM
+#   (2) STROBE START ANGLE SHOULD BE ADDED (NOW REGARDED AS 0)
+#   (3) BASINS OF ATTRACTION GRAPHS
+#   (4) FFT
 ##################################################################
 # variables :
 # w  : angular frequency
@@ -16,17 +23,24 @@
 ##################################################################
 # ************** HOW TO USE **************
 #
-# START WITH INITIAL VALUES AND CONSTANTS : 
-# var = numpy.array([w,th,ph])
-# cnst = numpy.array([q,g,wd])
+# VARIABLES TO USE IN FUNCTIONS : 
+# - var = numpy.array([w,th,ph])
+# - cnst = numpy.array([q,g,wd])
+# - res is the output of solve functions
+# - dt is time interval (optional)
+# - plotstep defines step between plotting points (optional)
+# - steady defines after how many periods to draw. (optional)
+# - strobe is wd/ws ratio (optional)
 #
-# FOR A GIVEN var AND cnst PROGRAM CAN :
+# FUNCTIONS WITH DESCRIPTIONS :
 # -solve by runge-kutta method :
 # solve(var,cnst,'dt','steps','plotstep')
 # -solve by euler method : 
 # solve2(var,cnst,'dt','steps','plotstep')
 # - plot phase space :
+# phase_space(res,cnst,'plotstep','steady')
 # - plot poincare section :
+# poincare_sec(res,cnst,'strobe','plotstep','steady')
 # - plot t versus * graphs :
 # - calculates fourier transform :
 # - plots trajectory :
@@ -132,10 +146,10 @@ def phase_space(res,cnst,plotstep=100,steady=30) :
 
 ##################################################################
 # plots poincare sections
-def poincare_sec(res,const,strobe=1./5,plotstep=100,steady=30) :
+def poincare_sec(res,cnst,strobe=1.,plotstep=100,steady=30) :
     
   sect_res = ([],[],[])
-  time = 2*pi*strobe/const[2]
+  time = 2*pi*strobe/cnst[2]
   
   i = 0
   j = 0
