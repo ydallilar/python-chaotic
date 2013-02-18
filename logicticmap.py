@@ -40,11 +40,11 @@ def plot(mu,xi,times,steps=50) :
   plt.show()
 
 ##################################################################
-def lyapunovexp(muint,xi=0.1,int=0.1,n=1000) :
+def lyapunovexp(muint,xi,int=0.1,n=1000) :
   x = var('x')
   lexp = ([])
   steps = (muint[1]-muint[0])/int
-  mu = linspace(muint[0],muint[1],num=steps+1)
+  mu = linspace(muint[0],muint[1],num=steps+2)
   j = 0
   while ( j < len(mu)) :
     fp = diff(f(mu[j],x,1),x,1)
